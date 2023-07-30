@@ -1,7 +1,7 @@
 use nalgebra::{DMatrix, DVector, ComplexField};
 
 fn main() {
-    test_calc_eigen_val_by_givens();
+    test_ex_10_7();
 }
 
 fn tridiagonalize_by_householder(mat: &DMatrix<f64>) -> DMatrix<f64> {
@@ -183,7 +183,7 @@ fn test_ex_10_7() {
     
     let ex10_9_result = tridiagonalize_by_householder(&test);
     
-    println!("tridiagonalized: {:6}", ex10_9_result);
+    println!("tridiagonalized: {:?}", ex10_9_result);
     println!("spectra: ρ(T) = {:6}, ρ(A) = {:6}", calc_spectral_radius(&ex10_9_result), calc_spectral_radius(&test));
     println!("eigen value: {:?}", calc_eigen_val_by_givens(&ex10_9_result, 10_000));
     println!("is triagonal: {}", check_tridiagonal(&ex10_9_result, 1e-10));
