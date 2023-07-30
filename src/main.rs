@@ -1,20 +1,6 @@
 use nalgebra::{DMatrix, DVector, ComplexField};
 
 fn main() {
-    let test = DMatrix::from_row_slice(5, 5,
-    &[2., 1., 2., 2., 2.,
-      1., 2., 1., 2., 2.,
-      2., 1., 2., 1., 2.,
-      2., 2., 1., 2., 1.,
-      2., 2., 2., 1., 2.,]);
-
-    let ex10_9_result = tridiagonalize_by_householder(&test);
-
-    // println!("tridiagonalized: {:6}", ex10_9_result);
-    // println!("spectra: ρ(T) = {:6}, ρ(A) = {:6}", calc_spectral_radius(&ex10_9_result), calc_spectral_radius(&test));
-    // println!("eigen value: {:?}", calc_eigen_val_by_givens(&ex10_9_result, 10_000));
-    // println!("is triagonal: {}", check_tridiagonal(&ex10_9_result, 1e-10));
-
     test_calc_eigen_val_by_givens();
 }
 
@@ -178,5 +164,21 @@ fn test_calc_eigen_val_by_givens() {
     let (max_index, max) = errors.iter().enumerate().max_by(|x, y| x.1.partial_cmp(y.1).unwrap()).unwrap();
 
     println!("max error: {}", max);
-    println!("the matrix: {:?}", test_data[max_index]);
+    println!("the matrix: {:}", test_data[max_index]);
+}
+
+fn test_ex_10_7 () {
+    let test = DMatrix::from_row_slice(5, 5,
+        &[2., 1., 2., 2., 2.,
+          1., 2., 1., 2., 2.,
+          2., 1., 2., 1., 2.,
+          2., 2., 1., 2., 1.,
+          2., 2., 2., 1., 2.,]);
+    
+    let ex10_9_result = tridiagonalize_by_householder(&test);
+    
+    println!("tridiagonalized: {:6}", ex10_9_result);
+    println!("spectra: ρ(T) = {:6}, ρ(A) = {:6}", calc_spectral_radius(&ex10_9_result), calc_spectral_radius(&test));
+    println!("eigen value: {:?}", calc_eigen_val_by_givens(&ex10_9_result, 10_000));
+    println!("is triagonal: {}", check_tridiagonal(&ex10_9_result, 1e-10));
 }
