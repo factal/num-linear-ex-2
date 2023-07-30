@@ -173,7 +173,7 @@ fn test_calc_eigen_val_by_givens() {
     println!("the matrix: {:}", test_data[max_index]);
 }
 
-fn test_ex_10_7 () {
+fn test_ex_10_7() {
     let test = DMatrix::from_row_slice(5, 5,
         &[2., 1., 2., 2., 2.,
           1., 2., 1., 2., 2.,
