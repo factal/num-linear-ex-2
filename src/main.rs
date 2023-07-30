@@ -10,9 +10,12 @@ fn main() {
 
     let ex10_9_result = tridiagonalize_by_householder(&test);
 
-    println!("tridiagonalized: {:6}", ex10_9_result);
-    println!("spectra: ρ(T) = {:6}, ρ(A) = {:6}", calc_spectral_radius(&ex10_9_result), calc_spectral_radius(&test));
-    println!("eigen value: {:?}", calc_eigen_val_by_givens(&ex10_9_result, 10_000));
+    // println!("tridiagonalized: {:6}", ex10_9_result);
+    // println!("spectra: ρ(T) = {:6}, ρ(A) = {:6}", calc_spectral_radius(&ex10_9_result), calc_spectral_radius(&test));
+    // println!("eigen value: {:?}", calc_eigen_val_by_givens(&ex10_9_result, 10_000));
+    // println!("is triagonal: {}", check_tridiagonal(&ex10_9_result, 1e-10));
+
+    test_calc_eigen_val_by_givens();
 }
 
 fn calc_spectral_radius(a: &DMatrix<f64>) -> f64 {
@@ -108,17 +111,72 @@ fn calc_eigen_val(sym_mat: &DMatrix<f64>, max_iter: usize) -> Vec<f64> {
     eigen_vals
 }
 
+fn check_tridiagonal(mat: &DMatrix<f64>, error: f64) -> bool {
+    let dim = mat.nrows();
+
+    for i in 0..dim {
+        for j in 0..dim {
+            if i != j && (i != j + 1 && i as i64 != j as i64 - 1) {
+                if mat[(i, j)].abs() > error {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 fn create_random_tridiag(size: usize) -> DMatrix<f64> {
     let mut mat = DMatrix::zeros(size, size);
     for i in 0..size {
         for j in 0..size {
             if i == j {
                 mat[(i, j)] = rand::random::<f64>();
-            } else if j > 0 && ( i == j + 1 || i == j - 1 ) {
+            } else if i + 1 == j {
                 mat[(i, j)] = rand::random::<f64>();
+            } else if i == j + 1 {
+                mat[(i, j)] = mat[(j, i)]
             }
         }
     }
 
     return mat;
+}
+
+fn test_calc_eigen_val_by_givens() {
+    const MAX_ITER: usize = 1_000;
+
+    let mut test_data: Vec<DMatrix<f64>> = vec![];
+
+    for _ in 0..MAX_ITER {
+        test_data.push(create_random_tridiag(5));
+    }
+
+    let mut target_eigen_vals: Vec<Vec<f64>>  = vec![];
+    let mut test_eigen_vals: Vec<Vec<f64>> = vec![];
+
+    for i in 0..MAX_ITER {
+        let mut target = test_data[i].complex_eigenvalues().iter().map(|x| x.re).collect::<Vec<f64>>();
+        target.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        target_eigen_vals.push(target);
+        let mut test = calc_eigen_val_by_givens(&test_data[i], 10_000);
+        test.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        test_eigen_vals.push(test);
+    }
+
+    let mut errors: Vec<f64> = vec![];
+
+    for i in 0..MAX_ITER {
+        let mut error = 0.0;
+        for j in 0..5 {
+            error += (target_eigen_vals[i][j] - test_eigen_vals[i][j]).powi(2);
+        }
+        errors.push(error.sqrt());
+    }
+
+    let (max_index, max) = errors.iter().enumerate().max_by(|x, y| x.1.partial_cmp(y.1).unwrap()).unwrap();
+
+    println!("max error: {}", max);
+    println!("the matrix: {:?}", test_data[max_index]);
 }
