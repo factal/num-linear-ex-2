@@ -102,8 +102,14 @@ fn check_tridiagonal(mat: &DMatrix<f64>, error: f64) -> bool {
 
     for i in 0..dim {
         for j in 0..dim {
-            if i != j && (i != j + 1 && i as i64 != j as i64 - 1) {
+            if i != j && (i != j + 1 && i + 1 != j) {
                 if mat[(i, j)].abs() > error {
+                    return false;
+                }
+            }
+
+            if i == j + 1 || i + 1 == j {
+                if (mat[(i, j)] - mat[(j, i)]).abs() > error {
                     return false;
                 }
             }
