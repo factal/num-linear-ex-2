@@ -4,10 +4,6 @@ fn main() {
     test_calc_eigen_val_by_givens();
 }
 
-fn calc_spectral_radius(a: &DMatrix<f64>) -> f64 {
-    a.complex_eigenvalues().iter().map(|x| x.abs()).max_by(|x, y| x.partial_cmp(y).unwrap()).unwrap()
-}
-
 fn tridiagonalize_by_householder(mat: &DMatrix<f64>) -> DMatrix<f64> {
     let dim = mat.nrows();
     let mut mat = mat.clone();
@@ -95,6 +91,10 @@ fn calc_eigen_val(sym_mat: &DMatrix<f64>, max_iter: usize) -> Vec<f64> {
     let eigen_vals = calc_eigen_val_by_givens(&tri_mat, max_iter);
 
     eigen_vals
+}
+
+fn calc_spectral_radius(a: &DMatrix<f64>) -> f64 {
+    a.complex_eigenvalues().iter().map(|x| x.abs()).max_by(|x, y| x.partial_cmp(y).unwrap()).unwrap()
 }
 
 fn check_tridiagonal(mat: &DMatrix<f64>, error: f64) -> bool {
